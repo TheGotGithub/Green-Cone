@@ -83,11 +83,12 @@ void loop() {
    *The current gas concentration
    *Print with 1s delay each time
    */
-  // Serial.print("Ambient ");
-  // Serial.print(gas.queryGasType());
-  // Serial.print(" concentration is: ");
-  Serial.println(gas.readGasConcentrationPPM());
-  // Serial.println(" %vol");
-  // Se.rial.println();
+  Serial.print("Ambient ");
+  Serial.print(gas.queryGasType());
+  Serial.print(" concentration is: ");
+  Serial.print(gas.readGasConcentrationPPM());
+  
+  Serial.println(" %vol");
+  Serial.println();
   delay(1000);
 }

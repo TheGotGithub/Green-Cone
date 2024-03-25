@@ -25,13 +25,13 @@ rows1 = [['Nikhil', 'COE', '2', '9.0']]
 rows2 = [['Nikhil', 'COE', '2', '9.0']]
 
 def csv_Write(rows):
-    filename = "O2_DataLog_Caribate.csv"
+    filename = "Ex7.csv"
 
     with open(filename, 'a') as csvfile:
         # creating a csv writer object
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow(rows)
-        time.sleep(5)
+        # time.sleep(0.2)
 index = 0
 while True:
     if serialInst.in_waiting:
@@ -40,4 +40,5 @@ while True:
         # time,CO2_1,val_1,CO2_2,val_2
         csv_Write([str(index),str(raw_data[8:13]), str(raw_data[22:27])])
         index+=1
+        time.sleep(0.2)
         print([str(index),str(raw_data[8:13]), str(raw_data[22:27])])
