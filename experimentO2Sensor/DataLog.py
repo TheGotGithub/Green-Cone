@@ -25,7 +25,7 @@ rows1 = [['Nikhil', 'COE', '2', '9.0']]
 rows2 = [['Nikhil', 'COE', '2', '9.0']]
 
 def csv_Write(rows):
-    filename = "Ex7.csv"
+    filename = "Ex8.csv"
 
     with open(filename, 'a') as csvfile:
         # creating a csv writer object
