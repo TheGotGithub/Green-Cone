@@ -40,6 +40,7 @@ variable details End--------*/
 /* USER CODE END PD */
 
 /* USER CODE BEGIN PV */
+uint32_t lastTime = 0;
 //O2_Sensor
 DFRobot_OxygenSensor oxygen;
 float oxygenVal = 0;
@@ -76,18 +77,19 @@ void printO2_Sensor();
 void setup() {
   Serial.begin(9600);
   while (!Serial) {
-    delay(100);
+    // delay(100);
   }
   Wire.begin();
+
   /* USER CODE*/
   //--O2_Sensor CODE-------------------------
   while(!oxygen.begin(Oxygen_IICAddress)){
     Serial.println("I2c device number error !");
-    delay(1000);
   }
   Serial.println("I2c connect success !");
   //--O2_Sensor CODE END----------------------
-  //--TEMPAIR_CO2 CODE
+
+  //--TEMP_AIR_CO2 CODE
   uint16_t error;
   char errorMessage[256];
   scd4x.begin(Wire);
@@ -110,23 +112,39 @@ void setup() {
 }
 
 void loop() {
-  /* USER CODE*/
-  //--O2_Sensor CODE-------------------------
-  // getO2_Sensor(&oxygenVal);
-  printO2_Sensor();
-  //--O2_Sensor CODE END ---------------------
-  
-  //--Temp_Air CODE-------
-  // getTempAir_CO2(2, &tempAir_1, &CO2Air_1, &humidityAir_1);
-  printTempAir_CO2_Sensor();
-  //--Temp_Air CODE END --
+    /* USER CODE*/
+    //--O2_Sensor CODE-------------------------
+    getO2_Sensor(&oxygenVal);
+    // printO2_Sensor();
+    //--O2_Sensor CODE END ---------------------
+    
+    //--Temp_Air CODE-------
+    getTempAir_CO2(6, &tempAir_1, &CO2Air_1, &humidityAir_1);
+    // printTempAir_CO2_Sensor();
+    //--Temp_Air CODE END --
 
-  //LUX_Sensor CODE -----
-  getLUX_Sensor(&luxVal);
-  Serial.println(luxVal);
-  //LUX_Sensor CODE END ----
+    //LUX_Sensor CODE -----
+    getLUX_Sensor(&luxVal);
+    // Serial.println(luxVal);
+    //LUX_Sensor CODE END ----
 
-  /* USER CODE END*/
+    /* USER CODE END*/
+    if ((millis() - lastTime) > 5000){
+      lastTime = millis();
+      Serial.println("-----------------------------");
+      
+      Serial.print(" oxygen concentration is ");
+      Serial.print(oxygenVal);
+      Serial.println(" %vol");
+
+      Serial.print(1);
+      Serial.print("TempAir : ");
+      Serial.println(tempAir_1);
+
+      Serial.print("LUX : ");
+      Serial.println(luxVal);
+
+    }
 }
 
 //-USER CODE FUNCTION-------------
@@ -137,7 +155,7 @@ void getTempAir_CO2(uint8_t index,float* tempVal,uint16_t* co2Val,float* humidit
   // MP.disableAllChannels();
   uint16_t error;
   char errorMessage[256];
-  delay(100);
+  // delay(100);
   // Read Measurement
   uint16_t co2 = 0;
   float temperature = 0.0f;
@@ -161,21 +179,22 @@ void getTempAir_CO2(uint8_t index,float* tempVal,uint16_t* co2Val,float* humidit
   } else if (co2 == 0) {
       Serial.println("Invalid sample detected, skipping.");
   } else {
+      // Serial.println(temperature);
       *tempVal = temperature;
       *co2Val = co2;
       *humidityVal = humidity;
   }
 }
 void printTempAir_CO2_Sensor(){
-  getTempAir_CO2(2, &tempAir_1, &CO2Air_1, &humidityAir_1);
+  getTempAir_CO2(6, &tempAir_1, &CO2Air_1, &humidityAir_1);
   Serial.print(1);
   Serial.print("TempAir : ");
   Serial.println(tempAir_1);
 
-  getTempAir_CO2(3, &tempAir_2, &CO2Air_2, &humidityAir_2);
-  Serial.print(2);
-  Serial.print("TempAir : ");
-  Serial.println(tempAir_2);
+  // getTempAir_CO2(7, &tempAir_2, &CO2Air_2, &humidityAir_2);
+  // Serial.print(2);
+  // Serial.print("TempAir : ");
+  // Serial.println(tempAir_2);
 }
 //O2_Sensor_CODE
 void printO2_Sensor(){
@@ -184,7 +203,6 @@ void printO2_Sensor(){
   Serial.print(" oxygen concentration is ");
   Serial.print(oxygenVal);
   Serial.println(" %vol");
-  delay(1000);
 }
 void getO2_Sensor(float *O2Val){
   oxygen.begin(Oxygen_IICAddress);
