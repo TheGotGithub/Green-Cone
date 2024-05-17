@@ -90,20 +90,25 @@ void setup() {
   //--O2_Sensor CODE END----------------------
 
   //--TEMP_AIR_CO2 CODE
-  uint16_t error;
-  char errorMessage[256];
-  scd4x.begin(Wire);
-  error = scd4x.stopPeriodicMeasurement();
-  if (error) {
-      Serial.print("Error trying to execute stopPeriodicMeasurement(): ");
-      errorToString(error, errorMessage, 256);
-      Serial.println(errorMessage);
-  }
   if (MP.begin() == false)
   {
     Serial.println("Could not connect to TCA9548 multiplexer.");
   }
-  error = scd4x.startPeriodicMeasurement();
+
+  MP.selectChannel(6);
+  scd4x.begin(Wire);
+  MP.selectChannel(7);
+  scd4x.begin(Wire);
+
+  uint16_t error;
+  char errorMessage[256];
+  // error = scd4x.stopPeriodicMeasurement();
+  // if (error) {
+  //     Serial.print("Error trying to execute stopPeriodicMeasurement(): ");
+  //     errorToString(error, errorMessage, 256);
+  //     Serial.println(errorMessage);
+  // }
+  // error = scd4x.startPeriodicMeasurement();
 
   //LUX_Sensor
   myLux.begin();
@@ -113,26 +118,25 @@ void setup() {
 
 void loop() {
     /* USER CODE*/
+
     //--O2_Sensor CODE-------------------------
     getO2_Sensor(&oxygenVal);
-    // printO2_Sensor();
     //--O2_Sensor CODE END ---------------------
     
     //--Temp_Air CODE-------
     getTempAir_CO2(6, &tempAir_1, &CO2Air_1, &humidityAir_1);
-    // printTempAir_CO2_Sensor();
+    getTempAir_CO2(7, &tempAir_2, &CO2Air_2, &humidityAir_2);
     //--Temp_Air CODE END --
 
     //LUX_Sensor CODE -----
     getLUX_Sensor(&luxVal);
-    // Serial.println(luxVal);
     //LUX_Sensor CODE END ----
 
     /* USER CODE END*/
     if ((millis() - lastTime) > 5000){
       lastTime = millis();
       Serial.println("-----------------------------");
-      
+
       Serial.print(" oxygen concentration is ");
       Serial.print(oxygenVal);
       Serial.println(" %vol");
@@ -140,6 +144,10 @@ void loop() {
       Serial.print(1);
       Serial.print("TempAir : ");
       Serial.println(tempAir_1);
+
+      Serial.print(2);
+      Serial.print("TempAir : ");
+      Serial.println(tempAir_2);
 
       Serial.print("LUX : ");
       Serial.println(luxVal);
@@ -152,6 +160,7 @@ void loop() {
 //TempAir_CO2---------
 void getTempAir_CO2(uint8_t index,float* tempVal,uint16_t* co2Val,float* humidityVal){
   MP.selectChannel(index);
+  // scd4x.begin(Wire);
   // MP.disableAllChannels();
   uint16_t error;
   char errorMessage[256];
@@ -208,7 +217,6 @@ void getO2_Sensor(float *O2Val){
   oxygen.begin(Oxygen_IICAddress);
   *O2Val = oxygen.getOxygenData(COLLECT_NUMBER);
 }
-
 void getLUX_Sensor(float *luxVal){
   myLux.begin();
   *luxVal = myLux.lightStrengthLux();
